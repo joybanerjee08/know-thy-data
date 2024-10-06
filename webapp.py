@@ -68,7 +68,8 @@ def main():
     st.set_page_config(page_title="Know Thy Data", page_icon="knowthydata.jpg", layout="wide", initial_sidebar_state="auto", menu_items=None)
     st.title("Know Thy Data")
     st.image("knowthydata.jpg",width=256)
-    st.markdown("**Know Thy Data is an innovative application that leverages the power of Google Gemini to provide comprehensive data analysis.** Users simply input their problem statement, data description, and up to 5 columns (including data type and description). Gemini then processes this information, extracting valuable insights and generating a variety of charts to visualize the data effectively. This intuitive tool empowers users to gain a deeper understanding of their datasets and make informed decisions based on data-driven analysis.", divider="gray")
+    st.markdown("**Know Thy Data is an innovative application that leverages the power of Google Gemini to provide comprehensive data analysis.** Users simply input their problem statement, data description, and up to 5 columns (including data type and description). Gemini then processes this information, extracting valuable insights and generating a variety of charts to visualize the data effectively. This intuitive tool empowers users to gain a deeper understanding of their datasets and make informed decisions based on data-driven analysis.")
+    st.divider()
 
     uploaded_file1 = st.file_uploader("Choose a CSV file with headers", type=["csv"])
 
