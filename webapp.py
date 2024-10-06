@@ -192,7 +192,7 @@ CHART:"""
                 
                 for ch in charts:
                     fig=None
-
+                    ch = ch.replace("\"",'')
                     if "box" in ch.lower():
                         fig = px.box(df, x=ch.split("+")[0].strip(), y=ch.split("=")[0].split("+")[1].strip())
                     if "scatter" in ch.lower():
