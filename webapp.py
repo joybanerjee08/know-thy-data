@@ -68,7 +68,7 @@ def main():
     st.set_page_config(page_title="Know Thy Data", page_icon="knowthydata.jpg", layout="wide", initial_sidebar_state="auto", menu_items=None)
     st.title("Know Thy Data")
     st.image("knowthydata.jpg",width=256)
-    st.subheader("This application will read your data and give you useful insights using AI !", divider="gray")
+    st.subheader("Know Thy Data is an innovative application that leverages the power of Google Gemini to provide comprehensive data analysis. Users simply input their problem statement, data description, and up to 5 columns (including data type and description). Gemini then processes this information, extracting valuable insights and generating a variety of charts to visualize the data effectively. This intuitive tool empowers users to gain a deeper understanding of their datasets and make informed decisions based on data-driven analysis.", divider="gray")
 
     uploaded_file1 = st.file_uploader("Choose a CSV file with headers", type=["csv"])
 
@@ -135,8 +135,8 @@ def main():
                         return
                     elif output != "":
                         prompt += "\n\n" + output + "\n\n" + "These are the columns of the data:"
-                prompt += "\n\n" + """QUESTION: Based on the problem statement and columns presented above, give me insights on how these columns can be useful to solve the problem statement given. 
-Also tell me which type of chart would be useful using given columns in the following format : COLUMN 1 NAME + COLUMN 2 NAME = LINE CHART (Explanation of the chart). Use the exact column name given and don't add any new columns. The Chart Names must be "Line", "Bar", "Pie", "Scatter","Box". Don't use any other chart names.
+                prompt += "\n\n" + """QUESTION: Based on the problem statement, data description and columns presented above, give me insights on how these columns can be useful to solve the problem statement given. 
+Also tell me which type of chart would be insightful using the given columns in the following format : COLUMN 1 NAME + COLUMN 2 NAME = LINE CHART (Explanation of the chart). Use the exact column name given and don't add any new columns. The Chart Names must be "Line", "Bar", "Pie", "Scatter","Box". Don't use any other chart names.
 
 Example:
 
