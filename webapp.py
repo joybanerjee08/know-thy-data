@@ -74,7 +74,7 @@ def main():
     st.markdown("2.No Missing values should be present")
     st.markdown("3.Numerical columns (Discreet or Continuous) must contain only numbers, not spaces or text")
     st.markdown("4.Output depends on how well defined the problem statement, data description and column descriptions are")
-    st.markdown("5.Problem statement and Data description cannot be greater than 1000 words and column description cannot be greater than 100 words")
+    st.markdown("5.Problem statement and Data description cannot be greater than 1500 words and column description cannot be greater than 100 words")
     st.divider()
 
     uploaded_file1 = st.file_uploader("Choose a CSV file with headers", type=["csv"])
