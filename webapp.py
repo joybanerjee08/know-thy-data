@@ -69,6 +69,12 @@ def main():
     st.title("Know Thy Data")
     st.image("knowthydata.jpg",width=256)
     st.markdown("**Know Thy Data is an innovative application that leverages the power of Google Gemini to provide comprehensive data analysis.** Users simply input their problem statement, data description, and up to 5 columns (including data type and description). Gemini then processes this information, extracting valuable insights and generating a variety of charts to visualize the data effectively. This intuitive tool empowers users to gain a deeper understanding of their datasets and make informed decisions based on data-driven analysis.")
+    st.subheader("Tips to use:")
+    st.markdown("1.Ensure your CSV file has headers")
+    st.markdown("2.No Missing values should be present")
+    st.markdown("3.Numerical columns (Discreet or Continuous) must contain only numbers, not spaces or text")
+    st.markdown("4.Output depends on how well defined the problem statement, data description and column descriptions are")
+    st.markdown("5.Problem statement and Data description cannot be greater than 1000 words and column description cannot be greater than 100 words")
     st.divider()
 
     uploaded_file1 = st.file_uploader("Choose a CSV file with headers", type=["csv"])
