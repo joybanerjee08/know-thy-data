@@ -192,21 +192,20 @@ CHART:"""
                 
                 for ch in charts:
                     fig=None
-                    ch = ch.replace("\"",'')
                     if "box" in ch.lower():
-                        fig = px.box(df, x=ch.split("+")[0].strip(), y=ch.split("=")[0].split("+")[1].strip())
+                        fig = px.box(df, x=ch.replace("\"",'').split("+")[0].strip(), y=ch.replace("\"",'').split("=")[0].split("+")[1].strip())
                     if "scatter" in ch.lower():
-                        fig = px.scatter(df, x=ch.split("+")[0].strip(), y=ch.split("=")[0].split("+")[1].strip())
+                        fig = px.scatter(df, x=ch.replace("\"",'').split("+")[0].strip(), y=ch.replace("\"",'').split("=")[0].split("+")[1].strip())
                     if "line" in ch.lower():
-                        fig = px.line(df, x=ch.split("+")[0].strip(), y=ch.split("=")[0].split("+")[1].strip())
+                        fig = px.line(df, x=ch.replace("\"",'').split("+")[0].strip(), y=ch.replace("\"",'').split("=")[0].split("+")[1].strip())
                     if "bar" in ch.lower():
-                        fig = px.bar(df, x=ch.split("+")[0].strip(), y=ch.split("=")[0].split("+")[1].strip())
+                        fig = px.bar(df, x=ch.replace("\"",'').split("+")[0].strip(), y=ch.replace("\"",'').split("=")[0].split("+")[1].strip())
                     if "pie" in ch.lower():
                         if "x" in ch:
-                            fig = px.pie(df, names=ch.split("+")[0].strip(), values=ch.split("=")[0].split("+")[1].strip())
+                            fig = px.pie(df, names=ch.replace("\"",'').split("+")[0].strip(), values=ch.replace("\"",'').split("=")[0].split("+")[1].strip())
                         else:
-                            df1 = df.groupby([ch.split("=")[0].strip()])[ch.split("=")[0].strip()].count().reset_index(name='count')
-                            fig = px.pie(df1, names=ch.split("=")[0].strip(), values="count")
+                            df1 = df.groupby([ch.replace("\"",'').split("=")[0].strip()])[ch.replace("\"",'').split("=")[0].strip()].count().reset_index(name='count')
+                            fig = px.pie(df1, names=ch.replace("\"",'').split("=")[0].strip(), values="count")
                     
                     if fig!=None:
                         st.subheader(ch.split("=")[0].strip(), divider=True)
