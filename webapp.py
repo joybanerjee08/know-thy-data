@@ -2,40 +2,38 @@ import streamlit as st
 import pandas as pd
 import google.generativeai as genai
 import plotly.express as px
+import difflib
 
 genai.configure(api_key=st.secrets["gemini_api_key"])
 
-def determine_data_type(column):
-    """
-    Determines the data type of a pandas column.
+def find_closest_match(input_string, string_list):
+  """
+  Finds the closest matching string in a list to the given input string.
 
-    Args:
-        column: A pandas Series.
+  Args:
+    input_string: The input string to be matched.
+    string_list: A list of strings to compare against.
 
-    Returns:
-        str: The determined data type ('Nominal', 'Ordinal', 'Discrete', 'Continuous', or 'Constant').
-    """
+  Returns:
+    The closest matching string in the list, or None if no close match is found.
+  """
+  # Find the closest match using difflib.get_close_matches
+  if input_string in string_list:
+    return input_string
 
-    # Check for constant values
-    if column.nunique() == 1:
-        return 5
+  closest_match = difflib.get_close_matches(input_string, string_list, n=1)[0]
 
-    # Check for categorical data
-    if isinstance(column.dtype, pd.api.types.CategoricalDtype):
-        # Check if categories have an order
-        if column.ordered:
-            return 2
-        else:
-            return 1
-    else:
-        if column.dtype.kind in 'i':
-            return 3
-        # Check for floating-point values
-        elif column.dtype.kind in 'f':
-            return 4
+  # Calculate the ratio of similarity between the input string and the closest match
+  similarity_ratio = difflib.SequenceMatcher(None, input_string, closest_match).ratio()
 
-    # Handle other data types (e.g., object)
-    return 0
+  # Set a threshold for similarity
+  similarity_threshold = 0.8
+
+  # Return the closest match if the similarity ratio is above the threshold
+  if similarity_ratio > similarity_threshold:
+    return closest_match
+  else:
+    return None
 
 def any_two_not_none(variables):
   """
@@ -107,27 +105,27 @@ def main():
         with grid[0]:
             col1 = st.selectbox('Select 1st column',df.columns.tolist(),placeholder="Select Column",index=None, key = "col1")
             if col1 != None:
-                type1 = st.selectbox('What type of Data is this ?',('Nominal', 'Ordinal', 'Discrete', 'Continuous','Boolean','Date','Time','Date and Time','Interval','Constant'),index=determine_data_type(df[col1]), key = "type1")
+                type1 = st.selectbox('What type of Data is this ?',('Nominal', 'Ordinal', 'Discrete', 'Continuous','Boolean','Date','Time','Date and Time','Interval','Constant'), key = "type1")
                 desc1 = st.text_input("Describe this column", value="", max_chars=100, key = "desc1")
         with grid[1]:
             col2 = st.selectbox('Select 2nd column',df.columns.tolist(),placeholder="Select Column",index=None, key = "col2")
             if col2 != None:
-                type2 = st.selectbox('What type of Data is this ?',('Nominal', 'Ordinal', 'Discrete', 'Continuous','Boolean','Date','Time','Date and Time','Interval','Constant'),index=determine_data_type(df[col1]), key = "type2")
+                type2 = st.selectbox('What type of Data is this ?',('Nominal', 'Ordinal', 'Discrete', 'Continuous','Boolean','Date','Time','Date and Time','Interval','Constant'), key = "type2")
                 desc2 = st.text_input("Describe this column", value="", max_chars=100, key = "desc2")
         with grid[2]:
             col3 = st.selectbox('Select 3rd column',df.columns.tolist(),placeholder="Select Column",index=None, key = "col3")
             if col3 != None:
-                type3 = st.selectbox('What type of Data is this ?',('Nominal', 'Ordinal', 'Discrete', 'Continuous','Boolean','Date','Time','Date and Time','Interval','Constant'),index=determine_data_type(df[col1]), key = "type3")
+                type3 = st.selectbox('What type of Data is this ?',('Nominal', 'Ordinal', 'Discrete', 'Continuous','Boolean','Date','Time','Date and Time','Interval','Constant'), key = "type3")
                 desc3 = st.text_input("Describe this column", value="", max_chars=100, key = "desc3")
         with grid[3]:
             col4 = st.selectbox('Select 4th column',df.columns.tolist(),placeholder="Select Column",index=None, key = "col4")
             if col4 != None:
-                type4 = st.selectbox('What type of Data is this ?',('Nominal', 'Ordinal', 'Discrete', 'Continuous','Boolean','Date','Time','Date and Time','Interval','Constant'),index=determine_data_type(df[col1]), key = "type4")
+                type4 = st.selectbox('What type of Data is this ?',('Nominal', 'Ordinal', 'Discrete', 'Continuous','Boolean','Date','Time','Date and Time','Interval','Constant'), key = "type4")
                 desc4 = st.text_input("Describe this column", value="", max_chars=100, key = "desc4")
         with grid[4]:
             col5 = st.selectbox('Select 5th column',df.columns.tolist(),placeholder="Select Column",index=None, key = "col5")
             if col5 != None:
-                type5 = st.selectbox('What type of Data is this ?',('Nominal', 'Ordinal', 'Discrete', 'Continuous','Boolean','Date','Time','Date and Time','Interval','Constant'),index=determine_data_type(df[col1]), key = "type5")
+                type5 = st.selectbox('What type of Data is this ?',('Nominal', 'Ordinal', 'Discrete', 'Continuous','Boolean','Date','Time','Date and Time','Interval','Constant'), key = "type5")
                 desc5 = st.text_input("Describe this column", value="", max_chars=100, key = "desc5")
 
         prompt = "PROBLEM STATEMENT: "+problem_statement + "\n\n" + "DATA DESCRIPTION: " + data_desc
@@ -179,8 +177,6 @@ CHART:"""
                 st.write(response.text)
                 st.balloons()
                 st.divider()
-                with open("./response.txt", "w") as f:
-                    f.write(response.text)
 
                 charts = []
                 for spe in response.text.split("\n"):
@@ -194,19 +190,36 @@ CHART:"""
                 for ch in charts:
                     fig=None
                     if "box" in ch.lower():
-                        fig = px.box(df, x=ch.replace("\"",'').split("+")[0].strip(), y=ch.replace("\"",'').split("=")[0].split("+")[1].strip())
+                        x_axis = find_closest_match(ch.replace("\"",'').split("+")[0].strip(),df.columns.tolist())
+                        y_axis = find_closest_match(ch.replace("\"",'').split("=")[0].split("+")[1].strip(),df.columns.tolist())
+                        if x_axis != None and y_axis != None:
+                            fig = px.box(df, x=x_axis, y=y_axis)
                     if "scatter" in ch.lower():
-                        fig = px.scatter(df, x=ch.replace("\"",'').split("+")[0].strip(), y=ch.replace("\"",'').split("=")[0].split("+")[1].strip())
+                        x_axis = find_closest_match(ch.replace("\"",'').split("+")[0].strip(),df.columns.tolist())
+                        y_axis = find_closest_match(ch.replace("\"",'').split("=")[0].split("+")[1].strip(),df.columns.tolist())
+                        if x_axis != None and y_axis != None:
+                            fig = px.scatter(df, x=x_axis, y=y_axis)
                     if "line" in ch.lower():
-                        fig = px.line(df, x=ch.replace("\"",'').split("+")[0].strip(), y=ch.replace("\"",'').split("=")[0].split("+")[1].strip())
+                        x_axis = find_closest_match(ch.replace("\"",'').split("+")[0].strip(),df.columns.tolist())
+                        y_axis = find_closest_match(ch.replace("\"",'').split("=")[0].split("+")[1].strip(),df.columns.tolist())
+                        if x_axis != None and y_axis != None:
+                            fig = px.line(df, x=x_axis, y=y_axis)
                     if "bar" in ch.lower():
-                        fig = px.bar(df, x=ch.replace("\"",'').split("+")[0].strip(), y=ch.replace("\"",'').split("=")[0].split("+")[1].strip())
+                        x_axis = find_closest_match(ch.replace("\"",'').split("+")[0].strip(),df.columns.tolist())
+                        y_axis = find_closest_match(ch.replace("\"",'').split("=")[0].split("+")[1].strip(),df.columns.tolist())
+                        if x_axis != None and y_axis != None:
+                            fig = px.bar(df, x=x_axis, y=y_axis)
                     if "pie" in ch.lower():
                         if "x" in ch:
-                            fig = px.pie(df, names=ch.replace("\"",'').split("+")[0].strip(), values=ch.replace("\"",'').split("=")[0].split("+")[1].strip())
+                            x_axis = find_closest_match(ch.replace("\"",'').split("+")[0].strip(),df.columns.tolist())
+                            y_axis = find_closest_match(ch.replace("\"",'').split("=")[0].split("+")[1].strip(),df.columns.tolist())
+                            if x_axis != None and y_axis != None:
+                                fig = px.pie(df, names=x_axis, values=y_axis)
                         else:
-                            df1 = df.groupby([ch.replace("\"",'').split("=")[0].strip()])[ch.replace("\"",'').split("=")[0].strip()].count().reset_index(name='count')
-                            fig = px.pie(df1, names=ch.replace("\"",'').split("=")[0].strip(), values="count")
+                            x_axis = find_closest_match(ch.replace("\"",'').split("=")[0].strip(),df.columns.tolist())
+                            if x_axis != None:
+                                df1 = df.groupby([x_axis])[x_axis].count().reset_index(name='count')
+                                fig = px.pie(df1, names=x_axis, values="count")
                     
                     if fig!=None:
                         st.subheader(ch.split("=")[0].strip(), divider=True)
